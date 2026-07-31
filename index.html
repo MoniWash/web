@@ -1,103 +1,358 @@
+
 <!DOCTYPE html>
 <html lang="th">
 <head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1">
-<base target="_top">
-
-<title>Moni ซักผ้า 24 ชั่วโมง</title>
-
-<style>
-*{
-    margin:0;
-    padding:0;
-    box-sizing:border-box;
-}
-
-html,body{
-    width:100%;
-    height:100%;
-    overflow:hidden;
-    font-family:Arial,sans-serif;
-}
-
-#splash{
-    position:fixed;
-    inset:0;
-    background:#fff;
-    display:flex;
-    justify-content:center;
-    align-items:center;
-    flex-direction:column;
-    z-index:9999;
-}
-
-#logo{
-    width:320px;
-    max-width:90%;
-}
-
-.loading{
-    margin-top:20px;
-    color:#ff4f94;
-    font-size:18px;
-    font-weight:bold;
-}
-
-.spinner{
-    width:45px;
-    height:45px;
-    margin-top:20px;
-    border:5px solid #ffd1e4;
-    border-top:5px solid #ff4f94;
-    border-radius:50%;
-    animation:spin 1s linear infinite;
-}
-
-@keyframes spin{
-    to{
-        transform:rotate(360deg);
-    }
-}
-
-iframe{
-    width:100%;
-    height:100%;
-    border:none;
-    display:none;
-}
-</style>
-
+  <base target="_top">
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Prompt:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+  <style>
+    :root{--blue:#0d6efd;--blue2:#0957d0;--navy:#172b4d;--bg:#f5f7fb;--card:#fff;--text:#172133;--muted:#6b7280;--line:#e7ebf1;--green:#20a464;--orange:#f59e0b;--red:#e5484d;--purple:#7c3aed}
+    *{box-sizing:border-box} html{-webkit-text-size-adjust:100%;text-size-adjust:100%} body{margin:0;font-family:'Prompt',sans-serif;background:var(--bg);color:var(--text)}
+    button,input,select,textarea{font:inherit} button{cursor:pointer}
+    .hidden{display:none!important}.app{min-height:100vh}.loading{position:fixed;inset:0;background:#ffffffcc;z-index:9999;display:flex;align-items:center;justify-content:center;font-weight:600}
+    .toast{position:fixed;right:22px;top:22px;z-index:99999;background:#172133;color:#fff;padding:13px 18px;border-radius:12px;box-shadow:0 10px 30px #0003;max-width:360px}
+    .login-wrap{min-height:100vh;display:grid;place-items:center;padding:24px;background:linear-gradient(135deg,#eef5ff,#f8fbff)}
+    .login-card{width:min(960px,100%);display:grid;grid-template-columns:1.05fr .95fr;background:white;border-radius:24px;overflow:hidden;box-shadow:0 25px 70px #22457722}
+    .login-art{padding:48px;background:linear-gradient(145deg,#0d6efd,#5aa7ff);color:#fff;display:flex;flex-direction:column;justify-content:center}
+    .washer{font-size:110px;filter:drop-shadow(0 10px 15px #0002)} .login-panel{padding:42px}.login-brand-logo-wrap{display:flex;justify-content:center;align-items:center;min-height:112px;margin:0 0 14px}.login-brand-logo{width:190px;max-width:80%;height:105px;object-fit:contain;border-radius:16px;background:#fff;padding:6px}.login-brand-fallback{font-size:58px;line-height:1}.login-panel .brand{text-align:center}.login-panel>.muted{text-align:center}
+    .brand{font-size:22px;font-weight:700}.muted{color:var(--muted);font-size:13px}.field{margin:13px 0}
+    .field label{display:block;font-size:13px;margin-bottom:7px;font-weight:500}.input{width:100%;border:1px solid var(--line);padding:12px 14px;border-radius:11px;outline:none;background:#fff}
+    .input:focus{border-color:var(--blue);box-shadow:0 0 0 3px #0d6efd18}
+    .btn{border:0;border-radius:10px;padding:11px 16px;font-weight:600}.btn-primary{background:var(--blue);color:#fff}.btn-primary:hover{background:var(--blue2)}
+    .btn-light{background:#f1f5f9;color:#334155}.btn-danger{background:#fff0f0;color:var(--red)}.btn-success{background:#eaf8f0;color:var(--green)}
+    .btn-block{width:100%}.link{color:var(--blue);cursor:pointer}.shell{display:grid;grid-template-columns:245px 1fr;min-height:100vh}
+    .sidebar{background:#fff;border-right:1px solid var(--line);padding:18px 14px;position:sticky;top:0;height:100vh}
+    .sidebar.admin{background:#172b4d;color:#fff}.logo{display:flex;gap:12px;align-items:center;padding:8px 10px 22px}.logo-icon{font-size:30px}.store-logo{width:48px;height:48px;object-fit:contain;border-radius:12px;background:#fff;padding:3px;border:1px solid var(--line)}.hero-store-logo{width:92px;height:92px;object-fit:contain;border-radius:18px;background:#fff;padding:6px;box-shadow:0 8px 24px #0f172a18;flex:0 0 auto}.brand-title{font-weight:800;line-height:1.2}
+    .nav{display:flex;flex-direction:column;gap:6px}.nav button{border:0;background:transparent;text-align:left;padding:11px 13px;border-radius:10px;color:#475569;display:flex;gap:10px}
+    .admin .nav button{color:#d8e2f2}.nav button.active{background:#eaf3ff;color:var(--blue);font-weight:600}.admin .nav button.active{background:#2865b5;color:#fff}
+    .main{padding:22px 28px}.topbar{display:flex;justify-content:space-between;align-items:center;margin-bottom:20px}.topbar h2{margin:0;font-size:22px}.avatar{width:38px;height:38px;border-radius:50%;display:grid;place-items:center;background:#dcecff}
+    .grid{display:grid;gap:16px}.grid-4{grid-template-columns:repeat(4,minmax(0,1fr))}.grid-3{grid-template-columns:repeat(3,minmax(0,1fr))}.grid-2{grid-template-columns:repeat(2,minmax(0,1fr))}
+    .card{background:#fff;border:1px solid var(--line);border-radius:16px;padding:18px;box-shadow:0 4px 14px #18233a08}.card h3{margin:0 0 12px;font-size:16px}
+    .stat{display:flex;justify-content:space-between;align-items:center}.stat strong{font-size:28px}.stat .ico{font-size:30px}
+    .machine-grid{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:14px}.machine{border:1px solid var(--line);border-radius:14px;padding:15px;background:#fff}
+    .machine.selected{border-color:var(--blue);box-shadow:0 0 0 3px #0d6efd18}.machine .pic{height:110px;display:flex;align-items:center;justify-content:center;margin:8px 0}
+.machine .pic img{width:96px;height:96px;object-fit:contain}
+.stepper{display:flex;gap:8px;margin-bottom:16px}.step-dot{flex:1;padding:9px;border-radius:10px;background:#eef2f7;color:#64748b;text-align:center;font-size:12px}.step-dot.active{background:#eaf3ff;color:var(--blue);font-weight:600}
+.summary-line{display:flex;justify-content:space-between;padding:10px 0;border-bottom:1px dashed var(--line)}
+.profile-photo{width:108px;height:108px;border-radius:50%;object-fit:cover;border:4px solid #eaf3ff;background:#eef4fb}
+.profile-head{text-align:center;display:flex;flex-direction:column;align-items:center;gap:10px;padding:8px 0 4px}.profile-head h2{margin:8px 0 0;line-height:1.3;max-width:100%}.profile-email{display:block;position:relative;z-index:2;width:100%;max-width:100%;min-height:24px;margin:0;padding:2px 12px 6px;color:var(--muted);font-size:14px;line-height:1.55;overflow-wrap:anywhere;word-break:break-word;white-space:normal}.profile-upload{display:inline-flex;align-items:center;justify-content:center;position:static!important;z-index:auto;margin:6px 0 0;max-width:100%;min-height:44px;flex:none}
+.profile-menu{display:grid;gap:10px;margin-top:18px}.profile-menu button{width:100%;border:1px solid var(--line);background:#fff;border-radius:13px;padding:14px 16px;display:flex;align-items:center;justify-content:space-between;text-align:left}.profile-menu button:hover{background:#f7faff;border-color:#b8d4ff}.profile-menu .left{display:flex;align-items:center;gap:12px}.profile-menu .icon{width:38px;height:38px;border-radius:10px;background:#eaf3ff;display:grid;place-items:center;font-size:20px}.profile-section{max-width:760px;margin:auto}
+.hero-book{background:linear-gradient(135deg,#0d6efd,#55a4ff);color:#fff;border:0}
+.hero-book .muted{color:#e8f3ff}.row{display:flex;gap:10px;align-items:center}.between{justify-content:space-between}
+    .badge{display:inline-flex;padding:5px 9px;border-radius:999px;font-size:11px;font-weight:600}.available{background:#eaf8f0;color:var(--green)}.reserved{background:#fff7df;color:#b77900}
+    .in_use{background:#eaf3ff;color:var(--blue)}.maintenance{background:#fff0e5;color:#d97706}.disabled{background:#f1f5f9;color:#64748b}
+    .pending{background:#fff7df;color:#b77900}.confirmed,.paid,.completed{background:#eaf8f0;color:var(--green)}.cancelled,.rejected{background:#fff0f0;color:var(--red)}.checking{background:#eee9ff;color:var(--purple)}
+    .tabs{display:flex;gap:8px;border-bottom:1px solid var(--line);margin-bottom:14px}.tabs button{border:0;background:none;padding:10px 4px;color:var(--muted)}.tabs button.active{color:var(--blue);border-bottom:2px solid var(--blue)}
+    .table-wrap{width:100%;overflow-x:auto;-webkit-overflow-scrolling:touch}.user-toolbar{margin-bottom:14px}.user-actions{flex-wrap:wrap}.email-cell{overflow-wrap:anywhere;word-break:break-word}table{width:100%;border-collapse:collapse;font-size:13px}th,td{padding:11px 10px;border-bottom:1px solid var(--line);text-align:left}th{color:#64748b;font-weight:600;background:#fafbfc}
+    .slot-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:9px}.slot{border:1px solid var(--line);padding:9px;border-radius:9px;background:#fff}.slot.active{background:var(--blue);color:#fff}.slot:disabled{opacity:.35}
+    .modal{position:fixed;inset:0;background:#0006;z-index:999;display:grid;place-items:center;padding:20px}.modal-box{background:#fff;border-radius:18px;width:min(620px,100%);max-height:90vh;overflow:auto;padding:22px}
+    .mobilebar{display:none}.mobile-admin-logout{display:none;align-items:center;justify-content:center;gap:6px;border:0;border-radius:10px;padding:9px 12px;background:#fff0f0;color:var(--red);font-weight:600;white-space:nowrap}.notice{padding:12px;border-radius:12px;background:#edf6ff;color:#315a88;font-size:13px}.empty{text-align:center;padding:30px;color:var(--muted)}
+    @media(max-width:980px){.grid-4,.machine-grid{grid-template-columns:repeat(2,1fr)}.shell{grid-template-columns:1fr}.sidebar{display:none}.main{padding:18px 14px 82px}.mobilebar{display:flex;position:fixed;bottom:0;left:0;right:0;background:#fff;border-top:1px solid var(--line);z-index:50;justify-content:space-around;padding:7px;padding-bottom:max(7px,env(safe-area-inset-bottom))}.mobile-admin-logout{display:inline-flex}.mobilebar button{border:0;background:none;font-size:11px;color:#64748b}.login-card{grid-template-columns:1fr}.login-art{display:none}.grid-2,.grid-3{grid-template-columns:1fr}}
+    @media(max-width:560px){.login-brand-logo-wrap{min-height:92px;margin-bottom:10px}.login-brand-logo{width:165px;height:88px}.login-brand-fallback{font-size:48px}.login-panel .brand{font-size:21px;line-height:1.35}.user-toolbar{align-items:stretch;flex-direction:column}.user-toolbar .btn{width:100%}.user-actions{min-width:220px}.user-actions .btn{flex:1;padding:9px 8px}.grid-4,.machine-grid,.slot-grid{grid-template-columns:1fr 1fr}.login-panel{padding:28px 20px}.main{padding-top:14px}.card{padding:14px}table{font-size:11px}.hide-sm{display:none}.profile-head{gap:8px}.profile-head h2{font-size:24px}.profile-email{font-size:14px;line-height:1.5;padding:4px 8px 8px}.profile-upload{width:auto;max-width:100%;font-size:14px;padding:10px 14px;margin-top:4px}}
+  </style>
 </head>
-
 <body>
+<div id="loading" class="loading hidden">กำลังโหลด...</div>
+<div id="toast" class="toast hidden"></div>
 
-<div id="splash">
-
-    <img id="logo"
-         src="LOGO_URL"
-         alt="Moni ซักผ้า 24 ชั่วโมง">
-
-    <div class="loading">
-        กำลังโหลดระบบ...
-    </div>
-
-    <div class="spinner"></div>
-
+<div id="loginView" class="login-wrap">
+  <div class="login-card">
+    <section class="login-art">
+      <div class="washer">🧺</div>
+      <h1>ระบบจองเครื่องซักผ้า</h1>
+      <p>สะดวก รวดเร็ว จองได้ทุกเวลา รองรับเงินสดและพร้อมเพย์</p>
+    </section>
+    <section class="login-panel">
+      <div id="loginLogoBox" class="login-brand-logo-wrap"><div class="login-brand-fallback">🫧</div></div>
+      <div class="brand"><span data-system-name>ระบบจองเครื่องซักผ้า</span></div>
+      <p class="muted">เข้าสู่ระบบเพื่อจองเครื่องซักผ้า</p>
+      <div id="loginForm">
+        <div class="field"><label>อีเมล</label><input id="loginEmail" class="input" type="email" placeholder="example@email.com"></div>
+        <div class="field"><label>รหัสผ่าน</label><input id="loginPassword" class="input" type="password" placeholder="อย่างน้อย 6 ตัว"></div>
+        <button class="btn btn-primary btn-block" onclick="login()">เข้าสู่ระบบ</button>
+        <p class="muted" style="text-align:right"><span class="link" onclick="forgotPasswordModal()">ลืมรหัสผ่าน?</span></p>
+        <p class="muted" style="text-align:center">ยังไม่มีบัญชี? <span class="link" onclick="showRegister(true)">สมัครสมาชิก</span></p>
+        <div class="notice">Moni สะดวก รวดเร็ว จองได้ทุกเวลา </div>
+      </div>
+      <div id="registerForm" class="hidden">
+        <div class="field"><label>ชื่อ-นามสกุล</label><input id="regName" class="input"></div>
+        <div class="field"><label>อีเมล</label><input id="regEmail" class="input" type="email"></div>
+        <div class="field"><label>เบอร์โทร</label><input id="regPhone" class="input"></div>
+        <div class="field"><label>รหัสผ่าน</label><input id="regPassword" class="input" type="password"></div>
+        <button class="btn btn-primary btn-block" onclick="register()">สมัครสมาชิก</button>
+        <p class="muted" style="text-align:center"><span class="link" onclick="showRegister(false)">กลับไปเข้าสู่ระบบ</span></p>
+      </div>
+    </section>
+  </div>
 </div>
 
-<iframe id="app"
-src="https://script.google.com/macros/s/AKfycbwI0YZLqDQgMkNtmrkxKtRzEsLXiEEi2DKnKOZs9gWxN4vnPlx1q2-LBeH9593Dqa7hpA/exec">
-</iframe>
+<div id="appView" class="app hidden"></div>
 
 <script>
-setTimeout(function(){
+let token=localStorage.getItem('laundry_token')||'';
+let currentUser=null, machines=[], selectedMachine=null, selectedSlot=null, chart=null, appConfig=null;
+async function getAppConfig(){if(!appConfig) appConfig=await gas('publicConfig'); return appConfig||{};}
+function logoHtml(c,cls='store-logo'){return c&&c.storeLogoEnabled&&c.storeLogoUrl?`<img class="${cls}" src="${esc(c.storeLogoUrl)}" alt="โลโก้ร้าน" onerror="this.style.display='none'">`:'';}
+async function applyBrand(){try{const c=await getAppConfig();document.querySelectorAll('[data-system-name]').forEach(el=>el.textContent=c.systemName||'ระบบจองเครื่องซักผ้า');const box=document.getElementById('sidebarLogoBox');if(box){box.innerHTML=logoHtml(c)||'<div class="logo-icon">🫧</div>';}const loginBox=document.getElementById('loginLogoBox');if(loginBox){loginBox.innerHTML=logoHtml(c,'login-brand-logo')||'<div class="login-brand-fallback">🫧</div>';}}catch(e){console.error('applyBrand',e)}}
+const pages={
+ user:[
+  ['home','🏠','หน้าแรก'],['booking','📅','จองเครื่องซักผ้า'],['mybookings','🧾','รายการจองของฉัน'],
+  ['notifications','🔔','การแจ้งเตือน'],['profile','👤','โปรไฟล์']
+ ],
+ admin:[
+  ['admin-dashboard','🏠','Dashboard'],['admin-users','👥','จัดการผู้ใช้'],['admin-machines','🧺','จัดการเครื่องซักผ้า'],
+  ['admin-bookings','📅','จัดการการจอง'],['admin-report','📊','รายงานการใช้งาน'],['admin-settings','⚙️','ตั้งค่าระบบ']
+ ]
+};
+document.addEventListener('DOMContentLoaded',()=>{applyBrand();if(token) resume();});
 
-    document.getElementById("splash").style.display="none";
-    document.getElementById("app").style.display="block";
+function gas(fn,...args){return new Promise((resolve,reject)=>google.script.run.withSuccessHandler(resolve).withFailureHandler(e=>reject(new Error(e.message||e)))[fn](...args))}
+function load(on=true){document.getElementById('loading').classList.toggle('hidden',!on)}
+function toast(msg){const t=document.getElementById('toast');t.textContent=msg;t.classList.remove('hidden');setTimeout(()=>t.classList.add('hidden'),2800)}
+function esc(v){return String(v??'').replace(/[&<>"']/g,s=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[s]))}
+function money(v){return Number(v||0).toLocaleString('th-TH')}
+function today(){return new Date().toISOString().slice(0,10)}
+function statusText(s){return ({available:'ว่าง',reserved:'จองแล้ว',in_use:'กำลังใช้งาน',maintenance:'ซ่อมบำรุง',disabled:'ปิดใช้งาน',pending:'รอตรวจสอบ',confirmed:'ยืนยันแล้ว',completed:'เสร็จสิ้น',cancelled:'ยกเลิก',checking:'กำลังตรวจสอบ',paid:'ชำระแล้ว',rejected:'ไม่ผ่าน',awaiting_slip:'รอสลิป',pending_cash:'รอรับเงินสด'})[s]||s}
+function badge(s){return `<span class="badge ${esc(s)}">${esc(statusText(s))}</span>`}
 
-},3000);
+async function resume(){try{load();currentUser=await gas('me',token);showApp();navigate(currentUser.role==='admin'?'admin-dashboard':'home')}catch(e){localStorage.removeItem('laundry_token');token=''}finally{load(false)}}
+function showRegister(on){document.getElementById('loginForm').classList.toggle('hidden',on);document.getElementById('registerForm').classList.toggle('hidden',!on)}
+async function login(){try{load();const r=await gas('login',{email:loginEmail.value,password:loginPassword.value});token=r.token;currentUser=r.user;localStorage.setItem('laundry_token',token);showApp();navigate(currentUser.role==='admin'?'admin-dashboard':'home')}catch(e){toast(e.message)}finally{load(false)}}
+
+function forgotPasswordModal(){
+ document.body.insertAdjacentHTML('beforeend',`<div id="modal" class="modal"><div class="modal-box" style="max-width:430px">
+ <div class="row between"><h3>ลืมรหัสผ่าน</h3><button class="btn btn-light" onclick="modal.remove()">✕</button></div>
+ <p class="muted">กรอกอีเมลที่ใช้สมัคร ระบบจะส่งรหัสผ่านชั่วคราวไปให้</p>
+ <div class="field"><label>อีเมล</label><input id="forgotEmail" class="input" type="email"></div>
+ <button class="btn btn-primary btn-block" onclick="sendForgotPassword()">ส่งรหัสผ่านชั่วคราว</button></div></div>`);
+}
+async function sendForgotPassword(){
+ try{
+  load();
+  const r=await gas('forgotPassword',forgotEmail.value);
+  modal.remove();
+  toast(r.message);
+ }catch(e){toast(e.message)}finally{load(false)}
+}
+
+async function register(){try{load();const r=await gas('registerUser',{name:regName.value,email:regEmail.value,phone:regPhone.value,password:regPassword.value});token=r.token;currentUser=r.user;localStorage.setItem('laundry_token',token);showApp();navigate('home')}catch(e){toast(e.message)}finally{load(false)}}
+async function logout(){
+ try{load();await gas('logout',token)}catch(e){}
+ token='';currentUser=null;selectedMachine=null;selectedSlot=null;
+ localStorage.removeItem('laundry_token');
+ appView.innerHTML='';appView.classList.add('hidden');loginView.classList.remove('hidden');
+ document.getElementById('loginPassword').value='';showRegister(false);load(false);
+}
+
+function showApp(){
+ loginView.classList.add('hidden');appView.classList.remove('hidden');
+ const list=currentUser.role==='admin'?pages.admin:pages.user;
+ appView.innerHTML=`<div class="shell">
+ <aside class="sidebar ${currentUser.role==='admin'?'admin':''}">
+  <div class="logo"><div id="sidebarLogoBox"><div class="logo-icon">🫧</div></div><div><b class="brand-title" data-system-name>ระบบจองเครื่องซักผ้า</b><div class="muted">${currentUser.role==='admin'?'แอดมิน':'ผู้ใช้งาน'}</div></div></div>
+  <div class="nav">${list.map(x=>`<button id="nav-${x[0]}" onclick="navigate('${x[0]}')"><span>${x[1]}</span>${x[2]}</button>`).join('')}
+  <button onclick="logout()">🚪 ออกจากระบบ</button></div>
+ </aside>
+ <main class="main"><div class="topbar"><div><h2 id="pageTitle">หน้าแรก</h2><div class="muted">สวัสดี, ${esc(currentUser.name)} 👋</div></div><div class="row">${currentUser.role==='admin'?'<button class="mobile-admin-logout" onclick="logout()">🚪 ออกจากระบบ</button>':''}<div class="avatar">👤</div></div></div><div id="content"></div></main>
+ </div><div class="mobilebar">${(currentUser.role==='admin'?list.slice(0,4):pages.user.filter(x=>['home','booking','mybookings','profile'].includes(x[0]))).map(x=>`<button onclick="navigate('${x[0]}')"><div>${x[1]}</div>${x[2]}</button>`).join('')}</div>`;
+ applyBrand();
+}
+function setActive(page,title){document.querySelectorAll('.nav button').forEach(x=>x.classList.remove('active'));document.getElementById('nav-'+page)?.classList.add('active');pageTitle.textContent=title}
+async function navigate(page){try{load();const map={
+ 'home':['หน้าแรก',renderHome],'booking':['จองเครื่องซักผ้า',renderBooking],'mybookings':['รายการจองของฉัน',renderMyBookings],
+ 'notifications':['การแจ้งเตือน',renderNotifications],'profile':['โปรไฟล์ของฉัน',renderProfile],
+ 'admin-dashboard':['Dashboard',renderAdminDashboard],'admin-users':['จัดการผู้ใช้',renderAdminUsers],
+ 'admin-machines':['จัดการเครื่องซักผ้า',renderAdminMachines],'admin-bookings':['จัดการการจอง',renderAdminBookings],
+ 'admin-report':['รายงานการใช้งาน',renderAdminReport],'admin-settings':['ตั้งค่าระบบ',renderAdminSettings]
+ };setActive(page,map[page][0]);await map[page][1]()}catch(e){toast(e.message)}finally{load(false)}}
+
+async function renderHome(){
+ const homeCfg=await getAppConfig();
+ let d={};
+ try{ d=(await gas('getDashboard',token))||{}; }catch(e){ console.error('getDashboard:',e); }
+ // เรียกสรุปเครื่องแบบเบาแยกอีกครั้ง เพื่อให้หน้าลูกค้าไม่ขึ้น 0 แม้ข้อมูลส่วนการจองมีปัญหา
+ try{
+   const live=(await gas('getCustomerMachineStats',token))||{};
+   if(live.stats) d.stats=live.stats;
+   if(Array.isArray(live.machines)) d.machines=live.machines;
+ }catch(e){ console.error('getCustomerMachineStats:',e); }
+ machines=Array.isArray(d.machines)?d.machines:[];d.stats=d.stats||{total:0,available:0,inUse:0,reserved:0,maintenance:0};d.upcoming=Array.isArray(d.upcoming)?d.upcoming:[];d.notifications=Array.isArray(d.notifications)?d.notifications:[];
+ content.innerHTML=`<div class="card hero-book" style="margin-bottom:16px"><div class="row between"><div class="row" style="align-items:center;gap:16px">${logoHtml(homeCfg,'hero-store-logo')}<div><div class="muted" style="margin-bottom:3px">${esc(homeCfg.systemName||'ระบบจองเครื่องซักผ้า')}</div><h2 style="margin:0">จองเครื่องซักผ้า</h2><div class="muted">เลือกเครื่อง วันที่ และเวลาที่สะดวกได้ตลอด 24 ชั่วโมง</div></div></div><button class="btn btn-light" onclick="navigate('booking')">จองตอนนี้</button></div></div><div class="grid grid-4">
+ ${[['เครื่องทั้งหมด',d.stats.total,'🧺'],['ว่าง',d.stats.available,'✅'],['กำลังใช้งาน',d.stats.inUse,'🔵'],['ซ่อมบำรุง',d.stats.maintenance,'🛠️']].map(x=>`<div class="card stat"><div><div class="muted">${x[0]}</div><strong>${x[1]}</strong><div class="muted">เครื่อง</div></div><div class="ico">${x[2]}</div></div>`).join('')}</div>
+ <div class="grid grid-2" style="margin-top:16px">
+ <div class="card"><div class="row between"><h3>สถานะเครื่องซักผ้า</h3><span class="link" onclick="navigate('booking')">จองเลย ›</span></div>
+ <div class="machine-grid">${machines.slice(0,8).map(machineCard).join('')}</div></div>
+ <div class="card"><h3>การจองครั้งถัดไป</h3>${d.upcoming.length?d.upcoming.map(b=>`<div style="padding:12px 0;border-bottom:1px solid var(--line)"><div class="row between"><b>${esc(b.machineName)}</b>${badge(b.bookingStatus)}</div><div class="muted">${esc(b.date)} เวลา ${esc(b.startTime)}-${esc(b.endTime)}</div></div>`).join(''):'<div class="empty">ยังไม่มีรายการจอง</div>'}
+ <h3 style="margin-top:18px">การแจ้งเตือน</h3>${d.notifications.length?d.notifications.map(n=>`<div class="notice" style="margin:8px 0"><b>${esc(n.title)}</b><br>${esc(n.message)}</div>`).join(''):'<div class="empty">ไม่มีการแจ้งเตือน</div>'}</div></div>`;
+}
+function machineCard(m){return `<div class="machine"><div class="row between"><b>${esc(m.name)}</b>${badge(m.status)}</div><div class="pic"><img alt="เครื่องซักผ้า" src="data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 160 160'><rect x='24' y='8' width='112' height='144' rx='14' fill='%23f8fbff' stroke='%239ab9dd' stroke-width='5'/><rect x='34' y='18' width='92' height='24' rx='6' fill='%23dcecff'/><circle cx='113' cy='30' r='6' fill='%230d6efd'/><circle cx='80' cy='94' r='39' fill='%232d557c'/><circle cx='80' cy='94' r='30' fill='%23bfe1ff'/><path d='M58 91c15-15 31 8 47-7 4 21-7 35-25 35-17 0-27-11-27-26z' fill='%2359aaf5'/></svg>"></div><div class="muted">${esc(m.floor)} ${esc(m.zone)}</div><div class="row between"><span>${money(m.price)} บาท</span><span>${m.duration} นาที</span></div></div>`}
+
+async function renderBooking(){
+ machines=await gas('getMachines',token);machines=Array.isArray(machines)?machines:[];
+ selectedMachine=null;selectedSlot=null;
+ content.innerHTML=`<div class="stepper"><div id="step1" class="step-dot active">1 เลือกเครื่อง</div><div id="step2" class="step-dot">2 เลือกวันและเวลา</div><div id="step3" class="step-dot">3 ตรวจสอบและยืนยัน</div></div>
+ <div id="bookingStage"></div>`;
+ renderBookingStage1();
+}
+function bookingSteps(n){[1,2,3].forEach(i=>document.getElementById('step'+i)?.classList.toggle('active',i===n))}
+function renderBookingStage1(){
+ bookingSteps(1);
+ bookingStage.innerHTML=`<div class="card"><h3>เลือกเครื่องซักผ้า</h3><p class="muted">เลือกเฉพาะเครื่องที่มีสถานะว่าง</p>
+ <div class="machine-grid">${machines.filter(m=>m.active).map(m=>`<div id="mc-${m.id}" class="machine ${m.status!=='available'?'disabled':''}" ${m.status==='available'?`onclick="selectMachineAndNext('${m.id}')"`:''}><div class="row between"><b>${esc(m.name)}</b>${badge(m.status)}</div><div class="pic"><img alt="เครื่องซักผ้า" src="data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 160 160'><rect x='24' y='8' width='112' height='144' rx='14' fill='%23f8fbff' stroke='%239ab9dd' stroke-width='5'/><rect x='34' y='18' width='92' height='24' rx='6' fill='%23dcecff'/><circle cx='113' cy='30' r='6' fill='%230d6efd'/><circle cx='80' cy='94' r='39' fill='%232d557c'/><circle cx='80' cy='94' r='30' fill='%23bfe1ff'/><path d='M58 91c15-15 31 8 47-7 4 21-7 35-25 35-17 0-27-11-27-26z' fill='%2359aaf5'/></svg>"></div><div class="muted">${esc(m.floor)} ${esc(m.zone)}</div><div class="row between"><span>${money(m.price)} บาท</span><span>${m.duration} นาที</span></div></div>`).join('')}</div></div>`;
+}
+function selectMachineAndNext(id){selectedMachine=machines.find(m=>m.id===id);renderBookingStage2()}
+function renderBookingStage2(){
+ bookingSteps(2);selectedSlot=null;
+ bookingStage.innerHTML=`<div class="grid grid-2"><div class="card"><div class="row between"><h3>${esc(selectedMachine.name)}</h3>${badge(selectedMachine.status)}</div><div class="pic"><img alt="เครื่องซักผ้า" src="data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 160 160'><rect x='24' y='8' width='112' height='144' rx='14' fill='%23f8fbff' stroke='%239ab9dd' stroke-width='5'/><rect x='34' y='18' width='92' height='24' rx='6' fill='%23dcecff'/><circle cx='113' cy='30' r='6' fill='%230d6efd'/><circle cx='80' cy='94' r='39' fill='%232d557c'/><circle cx='80' cy='94' r='30' fill='%23bfe1ff'/><path d='M58 91c15-15 31 8 47-7 4 21-7 35-25 35-17 0-27-11-27-26z' fill='%2359aaf5'/></svg>"></div><div class="summary-line"><span>ราคา</span><b>${money(selectedMachine.price)} บาท</b></div><div class="summary-line"><span>ระยะเวลา</span><b>${selectedMachine.duration} นาที</b></div><button class="btn btn-light" onclick="renderBookingStage1()">← เปลี่ยนเครื่อง</button></div>
+ <div class="card"><h3>เลือกวันที่</h3><input id="bookDate" class="input" type="date" min="${today()}" value="${today()}" onchange="loadSlots()"><h3 style="margin-top:18px">เลือกช่วงเวลา</h3><div id="slots"><div class="empty">กำลังโหลดช่วงเวลา...</div></div><button id="nextSummaryBtn" class="btn btn-primary btn-block" style="margin-top:16px" disabled onclick="renderBookingStage3()">ถัดไป</button></div></div>`;
+ loadSlots();
+}
+async function loadSlots(){
+ if(!selectedMachine)return;
+ try{
+  document.getElementById('slots').innerHTML='<div class="empty">กำลังโหลดช่วงเวลา...</div>';
+  const slotsRaw=await gas('getAvailableSlots',token,{date:document.getElementById('bookDate').value,machineId:selectedMachine.id});
+  const slots=Array.isArray(slotsRaw)?slotsRaw:[];
+  document.getElementById('slots').innerHTML=slots.length?`<div class="slot-grid">${slots.map(s=>`<button class="slot" ${!s.available?'disabled':''} onclick="pickSlot(this,'${s.startTime}','${s.endTime}')">${s.startTime}<br><small>ถึง ${s.endTime}</small></button>`).join('')}</div>`:'<div class="notice">ยังไม่มีช่วงเวลา กรุณาให้แอดมินเข้า “ตั้งค่าระบบ” แล้วกด “สร้างเวลา 24 ชั่วโมงใหม่”</div>';
+ }catch(e){document.getElementById('slots').innerHTML=`<div class="notice">${esc(e.message)}</div>`}
+}
+function pickSlot(el,start,end){document.querySelectorAll('.slot').forEach(x=>x.classList.remove('active'));el.classList.add('active');selectedSlot={startTime:start,endTime:end};document.getElementById('nextSummaryBtn').disabled=false}
+async function renderBookingStage3(){
+ window.bookingDateCache=document.getElementById('bookDate')?.value||today();
+ if(!selectedMachine||!selectedSlot)return toast('กรุณาเลือกเครื่องและเวลา');
+ bookingSteps(3);
+ const cfg=await getAppConfig();
+ const cash=cfg.cashEnabled!==false, pp=cfg.promptpayEnabled!==false;
+ const defaultPay=cash?'cash':'promptpay';
+ bookingStage.innerHTML=`<div class="card" style="max-width:720px;margin:auto"><h3>สรุปรายละเอียดการจอง</h3>
+ <div class="summary-line"><span>เครื่องซักผ้า</span><b>${esc(selectedMachine.name)}</b></div>
+ <div class="summary-line"><span>วันที่</span><b>${esc(window.bookingDateCache||today())}</b></div>
+ <div class="summary-line"><span>เวลา</span><b>${selectedSlot.startTime} - ${selectedSlot.endTime}</b></div>
+ <div class="summary-line"><span>ระยะเวลา</span><b>${selectedMachine.duration} นาที</b></div>
+ <div class="summary-line"><span>ยอดชำระ</span><b>${money(selectedMachine.price)} บาท</b></div>
+ <h3 style="margin-top:18px">วิธีชำระเงิน</h3><div class="row">
+ ${cash?`<label><input type="radio" name="pay" value="cash" ${defaultPay==='cash'?'checked':''} onchange="toggleQrPayment()"> เงินสด</label>`:''}
+ ${pp?`<label><input type="radio" name="pay" value="promptpay" ${defaultPay==='promptpay'?'checked':''} onchange="toggleQrPayment()"> สแกน QR พร้อมเพย์</label>`:''}</div>
+ <div id="qrPaymentBox"></div>
+ <div class="field"><label>หมายเหตุ</label><textarea id="bookNote" class="input" rows="3"></textarea></div>
+ <div class="row"><button class="btn btn-light" onclick="renderBookingStage2()">← ย้อนกลับ</button><button class="btn btn-primary" style="flex:1" onclick="submitBooking()">ยืนยันการจอง</button></div></div>`;
+ toggleQrPayment();
+}
+async function toggleQrPayment(){
+ const box=document.getElementById('qrPaymentBox'); if(!box)return;
+ const method=document.querySelector('input[name=pay]:checked')?.value;
+ if(method!=='promptpay'){box.innerHTML='';return;}
+ const cfg=await getAppConfig();
+ box.innerHTML=cfg.promptpayQrUrl?`<div class="card" style="margin:16px 0;text-align:center;background:#f8fbff"><h3>สแกน QR เพื่อชำระเงิน</h3><img src="${esc(cfg.promptpayQrUrl)}" alt="QR พร้อมเพย์" style="width:min(260px,80%);aspect-ratio:1;object-fit:contain;border:1px solid var(--line);border-radius:14px;background:#fff;padding:10px"><div style="margin-top:10px"><b>${esc(cfg.promptpayName||'')}</b><br><span class="muted">พร้อมเพย์ ${esc(cfg.promptpayId||'')}</span></div><div class="notice" style="margin-top:12px">ยอดชำระ ${money(selectedMachine.price)} บาท หลังชำระแล้วให้ยืนยันการจองและแนบสลิปในหน้ารายการจอง</div></div>`:`<div class="notice" style="margin:14px 0">ยังไม่ได้ตั้งค่ารูป QR พร้อมเพย์ กรุณาติดต่อผู้ดูแลระบบ</div>`;
+}
+async function openPaymentQr(){
+ const cfg=await getAppConfig();
+ if(!cfg.promptpayQrUrl)return toast('ผู้ดูแลระบบยังไม่ได้ตั้งค่ารูป QR พร้อมเพย์');
+ document.body.insertAdjacentHTML('beforeend',`<div id="modal" class="modal"><div class="modal-box" style="max-width:420px;text-align:center"><div class="row between"><h3>สแกน QR พร้อมเพย์</h3><button class="btn btn-light" onclick="modal.remove()">✕</button></div><img src="${esc(cfg.promptpayQrUrl)}" alt="QR พร้อมเพย์" style="width:min(280px,90%);aspect-ratio:1;object-fit:contain;border:1px solid var(--line);border-radius:14px;padding:10px"><h3 style="margin-top:12px">${esc(cfg.promptpayName||'')}</h3><div class="muted">พร้อมเพย์ ${esc(cfg.promptpayId||'')}</div></div></div>`);
+}
+async function submitBooking(){
+ if(!selectedMachine||!selectedSlot)return toast('กรุณาเลือกเครื่องและเวลา');
+ try{
+  load();
+  const paymentMethod=document.querySelector('input[name=pay]:checked').value;
+  const date=window.bookingDateCache || document.querySelector('#bookDate')?.value || today();
+  const r=await gas('createBooking',token,{machineId:selectedMachine.id,date,startTime:selectedSlot.startTime,endTime:selectedSlot.endTime,paymentMethod,note:bookNote.value});
+  const cfg=await getAppConfig();
+  const qrPart=paymentMethod==='promptpay'&&cfg.promptpayQrUrl?`<img src="${esc(cfg.promptpayQrUrl)}" alt="QR พร้อมเพย์" style="width:220px;aspect-ratio:1;object-fit:contain;border:1px solid var(--line);border-radius:14px;padding:8px;margin:8px auto"><div><b>${esc(cfg.promptpayName||'')}</b></div><div class="muted">ยอดชำระ ${money(selectedMachine.price)} บาท</div><div class="notice" style="margin:12px 0">สแกนชำระแล้ว กรุณาแนบสลิปในหน้ารายการจอง</div>`:`<div class="notice">ระบบได้ส่งการแจ้งเตือนไปยังหน้าการแจ้งเตือนของลูกค้าแล้ว</div>`;
+  document.body.insertAdjacentHTML('beforeend',`<div id="modal" class="modal"><div class="modal-box" style="max-width:450px;text-align:center"><div style="font-size:70px">✅</div><h2>ยืนยันการจองสำเร็จ</h2><p>${esc(selectedMachine.name)}<br>${esc(date)} เวลา ${selectedSlot.startTime}-${selectedSlot.endTime}</p>${qrPart}<button class="btn btn-primary btn-block" onclick="modal.remove();navigate('mybookings')">ดูรายการจอง / แนบสลิป</button></div></div>`);
+ }catch(e){toast(e.message)}finally{load(false)}
+}
+
+async function renderMyBookings(){
+ const rowsRaw=await gas('getMyBookings',token);
+ const rows=Array.isArray(rowsRaw)?rowsRaw:[];
+ content.innerHTML=`<div class="card"><div class="tabs"><button class="active">ทั้งหมด</button></div>${rows.length?rows.map(b=>`<div class="card" style="margin:12px 0;box-shadow:none"><div class="row between"><h3>${esc(b.machineName)}</h3>${badge(b.bookingStatus)}</div>
+ <div class="grid grid-3"><div><span class="muted">วันที่</span><br>${esc(b.date)}</div><div><span class="muted">เวลา</span><br>${esc(b.startTime)}-${esc(b.endTime)}</div><div><span class="muted">ยอดเงิน</span><br>${money(b.price)} บาท</div></div>
+ <p>ชำระ: ${b.paymentMethod==='cash'?'เงินสด':'พร้อมเพย์'} · ${badge(b.paymentStatus)}</p>
+ <div class="row">${b.paymentMethod==='promptpay'&&['awaiting_slip','rejected'].includes(b.paymentStatus)?`<button class="btn btn-primary" onclick="openPaymentQr()">สแกน QR</button><label class="btn btn-light">แนบสลิป<input type="file" accept="image/*" hidden onchange="uploadSlip(this,'${b.id}')"></label>`:''}
+ ${['pending','confirmed'].includes(b.bookingStatus)?`<button class="btn btn-danger" onclick="cancelBooking('${b.id}')">ยกเลิกการจอง</button>`:''}
+ ${b.slipUrl?`<a class="btn btn-light" href="${b.slipUrl}" target="_blank">ดูสลิป</a>`:''}</div></div>`).join(''):'<div class="empty">ยังไม่มีรายการจอง</div>'}</div>`;
+}
+async function uploadSlip(input,id){const f=input.files[0];if(!f)return;if(f.size>5*1024*1024)return toast('ไฟล์ต้องไม่เกิน 5 MB');const reader=new FileReader();reader.onload=async()=>{try{load();await gas('uploadSlip',token,{bookingId:id,base64:reader.result,mimeType:f.type,fileName:f.name});toast('ส่งสลิปแล้ว');renderMyBookings()}catch(e){toast(e.message)}finally{load(false)}};reader.readAsDataURL(f)}
+async function cancelBooking(id){if(!confirm('ยืนยันการยกเลิก?'))return;try{await gas('cancelBooking',token,id);toast('ยกเลิกแล้ว');renderMyBookings()}catch(e){toast(e.message)}}
+async function renderNotifications(){const rowsRaw=await gas('getNotifications',token);const rows=Array.isArray(rowsRaw)?rowsRaw:[];content.innerHTML=`<div class="card">${rows.length?rows.map(n=>`<div style="padding:14px;border-bottom:1px solid var(--line)"><div class="row between"><b>${esc(n.title)}</b><span>${n.isRead?'':'🔴'}</span></div><div class="muted">${esc(n.message)}</div><button class="btn btn-light" onclick="readN('${n.id}',this)">อ่านแล้ว</button></div>`).join(''):'<div class="empty">ไม่มีการแจ้งเตือน</div>'}</div>`}
+async function readN(id,btn){await gas('markNotificationRead',token,id);btn.remove()}
+function profileImage(){return currentUser.profilePhotoUrl?`<img class="profile-photo" src="${esc(currentUser.profilePhotoUrl)}" onerror="this.style.display='none';this.nextElementSibling.style.display='grid'"><div class="profile-photo" style="display:none;place-items:center;font-size:55px">👤</div>`:`<div class="profile-photo" style="display:grid;place-items:center;font-size:55px">👤</div>`}
+function renderProfile(){
+ content.innerHTML=`<div class="card profile-section"><div class="profile-head">${profileImage()}<h2>${esc(currentUser.name)}</h2><div class="profile-email">${esc(currentUser.email||'-')}</div><label class="btn btn-light profile-upload">📷 เปลี่ยนรูปโปรไฟล์<input type="file" accept="image/*" hidden onchange="uploadProfilePhoto(this)"></label></div>
+ <div class="profile-menu">
+  <button onclick="profilePersonal()"><span class="left"><span class="icon">👤</span><span><b>ข้อมูลส่วนตัว</b><div class="muted">ชื่อ เบอร์โทร และรูปโปรไฟล์</div></span></span><span>›</span></button>
+  <button onclick="navigate('mybookings')"><span class="left"><span class="icon">🧾</span><span><b>ประวัติการจองทั้งหมด</b><div class="muted">ดูรายละเอียดและสถานะการจอง</div></span></span><span>›</span></button>
+  <button onclick="profilePayments()"><span class="left"><span class="icon">💳</span><span><b>การชำระเงิน</b><div class="muted">ตรวจสอบเงินสด พร้อมเพย์ และสลิป</div></span></span><span>›</span></button>
+  <button onclick="navigate('notifications')"><span class="left"><span class="icon">🔔</span><span><b>การแจ้งเตือนของฉัน</b><div class="muted">ข่าวสารและสถานะรายการจอง</div></span></span><span>›</span></button>
+  <button onclick="profileSettings()"><span class="left"><span class="icon">⚙️</span><span><b>การตั้งค่า</b><div class="muted">เปลี่ยนรหัสผ่านและตั้งค่าบัญชี</div></span></span><span>›</span></button>
+  <button onclick="logout()"><span class="left"><span class="icon" style="background:#fff0f0">🚪</span><span><b style="color:var(--red)">ออกจากระบบ</b><div class="muted">กลับไปหน้าเข้าสู่ระบบ</div></span></span><span>›</span></button>
+ </div></div>`;
+}
+function profilePersonal(){content.innerHTML=`<div class="card profile-section"><div class="row between"><h3>ข้อมูลส่วนตัว</h3><button class="btn btn-light" onclick="renderProfile()">← กลับ</button></div><div style="text-align:center">${profileImage()}</div><div class="field"><label>ชื่อ-นามสกุล</label><input id="pfName" class="input" value="${esc(currentUser.name)}"></div><div class="field"><label>อีเมล</label><input class="input" value="${esc(currentUser.email)}" disabled></div><div class="field"><label>เบอร์โทร</label><input id="pfPhone" class="input" value="${esc(currentUser.phone||'')}"></div><button class="btn btn-primary btn-block" onclick="saveProfile()">บันทึกข้อมูล</button></div>`}
+async function saveProfile(){try{load();currentUser=await gas('updateProfile',token,{name:pfName.value,phone:pfPhone.value});toast('บันทึกข้อมูลแล้ว');profilePersonal()}catch(e){toast(e.message)}finally{load(false)}}
+async function uploadProfilePhoto(input){const f=input.files[0];if(!f)return;if(f.size>5*1024*1024)return toast('รูปต้องไม่เกิน 5 MB');const r=new FileReader();r.onload=async()=>{try{load();const out=await gas('uploadProfilePhoto',token,{base64:r.result,mimeType:f.type,fileName:f.name});currentUser=out.user;toast('อัปโหลดรูปแล้ว');renderProfile()}catch(e){toast(e.message)}finally{load(false)}};r.readAsDataURL(f)}
+async function profilePayments(){try{load();const rowsRaw=await gas('getMyPayments',token);const rows=Array.isArray(rowsRaw)?rowsRaw:[];content.innerHTML=`<div class="card profile-section"><div class="row between"><h3>การชำระเงิน</h3><button class="btn btn-light" onclick="renderProfile()">← กลับ</button></div>${rows.length?rows.map(p=>`<div class="card" style="box-shadow:none;margin:10px 0"><div class="row between"><b>รายการ ${esc(p.bookingId)}</b>${badge(p.status)}</div><div class="summary-line"><span>วิธีชำระ</span><b>${p.method==='cash'?'เงินสด':'พร้อมเพย์'}</b></div><div class="summary-line"><span>ยอดเงิน</span><b>${money(p.amount)} บาท</b></div>${p.slipUrl?`<a class="btn btn-light" href="${p.slipUrl}" target="_blank">ดูสลิป</a>`:''}</div>`).join(''):'<div class="empty">ยังไม่มีประวัติการชำระเงิน</div>'}</div>`}catch(e){toast(e.message)}finally{load(false)}}
+function profileSettings(){content.innerHTML=`<div class="card profile-section"><div class="row between"><h3>การตั้งค่า</h3><button class="btn btn-light" onclick="renderProfile()">← กลับ</button></div><h3>เปลี่ยนรหัสผ่าน</h3><div class="field"><label>รหัสผ่านเดิม</label><input id="oldPass" class="input" type="password"></div><div class="field"><label>รหัสผ่านใหม่</label><input id="newPass" class="input" type="password" placeholder="อย่างน้อย 6 ตัว"></div><div class="field"><label>ยืนยันรหัสผ่านใหม่</label><input id="newPass2" class="input" type="password"></div><button class="btn btn-primary btn-block" onclick="savePassword()">เปลี่ยนรหัสผ่าน</button></div>`}
+async function savePassword(){if(newPass.value!==newPass2.value)return toast('ยืนยันรหัสผ่านใหม่ไม่ตรงกัน');try{load();await gas('changePassword',token,{currentPassword:oldPass.value,newPassword:newPass.value});toast('เปลี่ยนรหัสผ่านแล้ว');renderProfile()}catch(e){toast(e.message)}finally{load(false)}}
+
+/* ADMIN */
+async function renderAdminDashboard(){
+ const d=await gas('adminOverview',token);
+ content.innerHTML=`<div class="card hero-book" style="margin-bottom:16px"><div class="row between"><div><h2 style="margin:0">จองเครื่องซักผ้า</h2><div class="muted">เลือกเครื่อง วันที่ และเวลาที่สะดวกได้ตลอด 24 ชั่วโมง</div></div><button class="btn btn-light" onclick="navigate('booking')">จองตอนนี้</button></div></div><div class="grid grid-4">${[['เครื่องทั้งหมด',d.totalMachines,'🧺'],['กำลังใช้งาน',d.inUse,'🔵'],['ว่าง',d.available,'✅'],['ซ่อมบำรุง',d.maintenance,'🛠️']].map(x=>`<div class="card stat"><div><div class="muted">${x[0]}</div><strong>${x[1]}</strong><div class="muted">เครื่อง</div></div><div class="ico">${x[2]}</div></div>`).join('')}</div>
+ <div class="grid grid-3" style="margin-top:16px"><div class="card" style="grid-column:span 2"><h3>จำนวนการจองรายวัน (7 วันล่าสุด)</h3><canvas id="bookingChart"></canvas></div><div class="grid"><div class="card stat"><div><div class="muted">การจองวันนี้</div><strong>${d.todayBookings}</strong></div><div class="ico">📅</div></div><div class="card stat"><div><div class="muted">รายได้วันนี้</div><strong>${money(d.todayRevenue)}</strong><div class="muted">บาท</div></div><div class="ico">💵</div></div></div></div>
+ <div class="card" style="margin-top:16px"><h3>รายการจองล่าสุด</h3>${bookingTable(d.latest,true)}</div>`;
+ const ctx=document.getElementById('bookingChart');if(chart)chart.destroy();chart=new Chart(ctx,{type:'line',data:{labels:d.chart.map(x=>x.date.slice(5)),datasets:[{label:'จำนวนการจอง',data:d.chart.map(x=>x.count),tension:.35,fill:true}]},options:{responsive:true,plugins:{legend:{display:false}}}});
+}
+function bookingTable(rows,actions=false){return `<div style="overflow:auto"><table><thead><tr><th>ผู้ใช้</th><th>เครื่อง</th><th>วันที่</th><th>เวลา</th><th>ชำระเงิน</th><th>สถานะ</th>${actions?'<th>จัดการ</th>':''}</tr></thead><tbody>${rows.map(b=>`<tr><td>${esc(b.userName)}</td><td>${esc(b.machineName)}</td><td>${esc(b.date)}</td><td>${esc(b.startTime)}</td><td>${badge(b.paymentStatus)}</td><td>${badge(b.bookingStatus)}</td>${actions?`<td><button class="btn btn-light" onclick="navigate('admin-bookings')">ดู</button></td>`:''}</tr>`).join('')}</tbody></table></div>`}
+let adminUsers=[];
+async function renderAdminUsers(){
+ try{
+  load();
+  const rowsRaw=await gas('adminGetUsers',token);adminUsers=Array.isArray(rowsRaw)?rowsRaw:[];
+  content.innerHTML=`<div class="card"><div class="row between user-toolbar"><div><h3 style="margin:0">ผู้ใช้งานทั้งหมด</h3><div class="muted">เพิ่ม แก้ไข เปิด–ปิดบัญชี และกำหนดสิทธิ์ผู้ใช้</div></div><button class="btn btn-primary" onclick="userModal()">+ เพิ่มผู้ใช้</button></div><div class="table-wrap"><table><thead><tr><th>ชื่อ</th><th>อีเมล</th><th>เบอร์โทร</th><th>สิทธิ์</th><th>สถานะ</th><th>จัดการ</th></tr></thead><tbody>${adminUsers.length?adminUsers.map(u=>`<tr><td>${esc(u.name)}</td><td class="email-cell">${esc(u.email)}</td><td>${esc(u.phone||'-')}</td><td>${u.role==='admin'?'<span class="badge in_use">แอดมิน</span>':'<span class="badge disabled">ลูกค้า</span>'}</td><td>${u.active?badge('confirmed'):badge('cancelled')}</td><td><div class="row user-actions"><button class="btn btn-light" onclick="userModalById('${u.id}')">แก้ไข</button><button class="btn ${u.active?'btn-danger':'btn-success'}" onclick="toggleUser('${u.id}',${!u.active})">${u.active?'ปิดบัญชี':'เปิดบัญชี'}</button><button class="btn btn-danger" onclick="deleteUser('${u.id}')">ลบ</button></div></td></tr>`).join(''):`<tr><td colspan="6" class="empty">ยังไม่มีผู้ใช้</td></tr>`}</tbody></table></div></div>`;
+ }catch(e){toast(e.message)}finally{load(false)}
+}
+function userModalById(id){const u=adminUsers.find(x=>String(x.id)===String(id));if(u)userModal(u)}
+function userModal(u={}){document.body.insertAdjacentHTML('beforeend',`<div id="modal" class="modal"><div class="modal-box"><div class="row between"><h3>${u.id?'แก้ไขผู้ใช้':'เพิ่มผู้ใช้'}</h3><button class="btn btn-light" onclick="modal.remove()">✕</button></div><input id="uid" type="hidden" value="${esc(u.id||'')}"><div class="grid grid-2"><div class="field"><label>ชื่อ-นามสกุล</label><input id="uname" class="input" value="${esc(u.name||'')}"></div><div class="field"><label>อีเมล</label><input id="uemail" class="input" type="email" value="${esc(u.email||'')}"></div><div class="field"><label>เบอร์โทร</label><input id="uphone" class="input" value="${esc(u.phone||'')}"></div><div class="field"><label>สิทธิ์การใช้งาน</label><select id="urole" class="input"><option value="user" ${u.role!=='admin'?'selected':''}>ลูกค้า</option><option value="admin" ${u.role==='admin'?'selected':''}>แอดมิน</option></select></div><div class="field"><label>${u.id?'รหัสผ่านใหม่ (เว้นว่างได้)':'รหัสผ่าน'}</label><input id="upassword" class="input" type="password" placeholder="อย่างน้อย 6 ตัวอักษร"></div><div class="field"><label>สถานะบัญชี</label><select id="uactive" class="input"><option value="true" ${u.active!==false?'selected':''}>เปิดใช้งาน</option><option value="false" ${u.active===false?'selected':''}>ปิดใช้งาน</option></select></div></div><button class="btn btn-primary btn-block" onclick="saveUser()">บันทึกผู้ใช้</button></div></div>`)}
+async function saveUser(){try{load();await gas('adminSaveUser',token,{id:uid.value,name:uname.value,email:uemail.value,phone:uphone.value,role:urole.value,password:upassword.value,active:uactive.value==='true'});modal.remove();toast('บันทึกผู้ใช้แล้ว');await renderAdminUsers()}catch(e){toast(e.message)}finally{load(false)}}
+async function toggleUser(id,a){try{load();await gas('adminToggleUser',token,id,a);toast(a?'เปิดบัญชีแล้ว':'ปิดบัญชีแล้ว');await renderAdminUsers()}catch(e){toast(e.message)}finally{load(false)}}
+async function deleteUser(id){if(!confirm('ต้องการลบบัญชีผู้ใช้นี้หรือไม่?'))return;try{load();await gas('adminDeleteUser',token,id);toast('ลบบัญชีแล้ว');await renderAdminUsers()}catch(e){toast(e.message)}finally{load(false)}}
+async function renderAdminMachines(){machines=await gas('getMachines',token);machines=Array.isArray(machines)?machines:[];content.innerHTML=`<div class="card"><div class="row between"><h3>เครื่องซักผ้าทั้งหมด</h3><button class="btn btn-primary" onclick="machineModal()">+ เพิ่มเครื่อง</button></div><table><thead><tr><th>เครื่อง</th><th>สถานะ</th><th>ตำแหน่ง</th><th>ราคา</th><th>เวลา</th><th>จัดการ</th></tr></thead><tbody>${machines.map(m=>`<tr><td>${esc(m.name)}</td><td>${badge(m.status)}</td><td>${esc(m.floor)} ${esc(m.zone)}</td><td>${money(m.price)} บาท</td><td>${m.duration} นาที</td><td><button class="btn btn-light" onclick='machineModal(${JSON.stringify(m)})'>แก้ไข</button> <button class="btn btn-danger" onclick="deleteMachine('${m.id}')">ลบ</button></td></tr>`).join('')}</tbody></table></div>`}
+function machineModal(m={}){document.body.insertAdjacentHTML('beforeend',`<div id="modal" class="modal"><div class="modal-box"><div class="row between"><h3>${m.id?'แก้ไขเครื่อง':'เพิ่มเครื่อง'}</h3><button class="btn btn-light" onclick="modal.remove()">✕</button></div><input id="mid" type="hidden" value="${esc(m.id||'')}"><div class="grid grid-2"><div class="field"><label>ชื่อเครื่อง</label><input id="mname" class="input" value="${esc(m.name||'')}"></div><div class="field"><label>สถานะ</label><select id="mstatus" class="input">${['available','reserved','in_use','maintenance','disabled'].map(s=>`<option value="${s}" ${m.status===s?'selected':''}>${statusText(s)}</option>`).join('')}</select></div><div class="field"><label>ชั้น</label><input id="mfloor" class="input" value="${esc(m.floor||'ชั้น 1')}"></div><div class="field"><label>โซน</label><input id="mzone" class="input" value="${esc(m.zone||'โซน A')}"></div><div class="field"><label>ราคา/รอบ</label><input id="mprice" class="input" type="number" value="${m.price||50}"></div><div class="field"><label>ระยะเวลา (นาที)</label><input id="mduration" class="input" type="number" value="${m.duration||50}"></div></div><button class="btn btn-primary btn-block" onclick="saveMachine()">บันทึก</button></div></div>`)}
+async function saveMachine(){try{await gas('adminSaveMachine',token,{id:mid.value,name:mname.value,status:mstatus.value,floor:mfloor.value,zone:mzone.value,price:mprice.value,duration:mduration.value,active:true});modal.remove();toast('บันทึกแล้ว');renderAdminMachines()}catch(e){toast(e.message)}}
+async function deleteMachine(id){if(!confirm('ปิดใช้งานเครื่องนี้?'))return;await gas('adminDeleteMachine',token,id);renderAdminMachines()}
+async function renderAdminBookings(){const rowsRaw=await gas('getMyBookings',token);
+ const rows=Array.isArray(rowsRaw)?rowsRaw:[];content.innerHTML=`<div class="card"><h3>จัดการการจอง</h3><div style="overflow:auto"><table><thead><tr><th>ผู้ใช้</th><th>เครื่อง</th><th>วันเวลา</th><th>ยอด</th><th>การชำระ</th><th>สถานะ</th><th>หลักฐาน</th><th>จัดการ</th></tr></thead><tbody>${rows.map(b=>`<tr><td>${esc(b.userName)}</td><td>${esc(b.machineName)}</td><td>${esc(b.date)}<br>${esc(b.startTime)}-${esc(b.endTime)}</td><td>${money(b.price)}</td><td>${badge(b.paymentStatus)}</td><td>${badge(b.bookingStatus)}</td><td>${b.slipUrl?`<a href="${b.slipUrl}" target="_blank">ดูสลิป</a>`:'-'}</td><td><div class="row"><button class="btn btn-success" onclick="actBooking('${b.id}','confirm')">ยืนยัน</button><button class="btn btn-light" onclick="actBooking('${b.id}','start')">เริ่ม</button><button class="btn btn-primary" onclick="actBooking('${b.id}','complete')">เสร็จ</button><button class="btn btn-danger" onclick="actBooking('${b.id}','reject')">ไม่ผ่าน</button></div></td></tr>`).join('')}</tbody></table></div></div>`}
+async function actBooking(id,a){try{await gas('adminUpdateBooking',token,id,a);toast('อัปเดตแล้ว');renderAdminBookings()}catch(e){toast(e.message)}}
+async function renderAdminReport(){content.innerHTML=`<div class="card"><div class="row"><div class="field"><label>ตั้งแต่วันที่</label><input id="rf" class="input" type="date" value="${today().slice(0,8)}01"></div><div class="field"><label>ถึงวันที่</label><input id="rt" class="input" type="date" value="${today()}"></div><button class="btn btn-primary" onclick="loadReport()">แสดงรายงาน</button></div><div id="reportBox"></div></div>`;loadReport()}
+async function loadReport(){const d=await gas('adminReport',token,rf.value,rt.value);reportBox.innerHTML=`<div class="grid grid-4" style="margin:16px 0"><div class="card"><div class="muted">จำนวนการจอง</div><h2>${d.totalBookings}</h2></div><div class="card"><div class="muted">ชำระแล้ว</div><h2>${d.paidBookings}</h2></div><div class="card"><div class="muted">รายได้รวม</div><h2>${money(d.revenue)}</h2></div><div class="card"><div class="muted">เครื่องยอดนิยม</div><h2>${esc(d.topMachine)}</h2><div>${d.topCount} ครั้ง</div></div></div>${bookingTable(d.rows,false)}<button class="btn btn-light" onclick="window.print()">🖨️ พิมพ์ / บันทึก PDF</button>`}
+function driveImageUrl(url){const raw=String(url||'').trim();let m=raw.match(/\/file\/d\/([a-zA-Z0-9_-]+)/)||raw.match(/[?&]id=([a-zA-Z0-9_-]+)/);return m?'https://drive.google.com/thumbnail?id='+m[1]+'&sz=w1000':raw;}
+async function renderAdminSettings(){
+ const sRaw=await gas('adminGetSettings',token);
+ const slotsRaw=await gas('adminGetTimeSlots',token);
+ const s=(sRaw && typeof sRaw==='object')?sRaw:{};
+ const slots=Array.isArray(slotsRaw)?slotsRaw:[];
+ content.innerHTML=`<div class="grid grid-2">
+ <div class="card"><h3>ตั้งค่าระบบ</h3><div class="notice">ร้านเปิดให้บริการตลอด 24 ชั่วโมง ผู้ดูแลระบบสามารถเพิ่ม แก้ไข หรือลบช่วงเวลาจองได้ด้านขวา</div>
+ <div class="grid grid-2"><div class="field"><label>ชื่อระบบ</label><input id="systemName" class="input" value="${esc(s.systemName||'')}"></div><div class="field"><label>ลิงก์รูปโลโก้ร้าน</label><input id="storeLogoUrl" class="input" value="${esc(s.storeLogoOriginalUrl||s.storeLogoUrl||'')}" placeholder="วางลิงก์รูปจาก Google Drive หรือ URL รูปภาพ" oninput="storeLogoPreview.src=driveImageUrl(this.value);storeLogoPreview.style.display=this.value?'block':'none'"><img id="storeLogoPreview" src="${esc(s.storeLogoUrl||'')}" style="${s.storeLogoUrl?'':'display:none;'}width:180px;height:100px;object-fit:contain;margin-top:10px;border:1px solid var(--line);border-radius:12px;padding:6px;background:#fff"></div><div class="field"><label>ราคาเริ่มต้น</label><input id="defaultPrice" class="input" type="number" value="${esc(s.defaultPrice||50)}"></div><div class="field"><label>ระยะเวลาเริ่มต้น (นาที)</label><input id="defaultDuration" class="input" type="number" value="${esc(s.defaultDuration||50)}"></div><div class="field"><label>เบอร์พร้อมเพย์</label><input id="promptpayId" class="input" value="${esc(s.promptpayId||'')}"></div><div class="field"><label>ชื่อบัญชีพร้อมเพย์</label><input id="promptpayName" class="input" value="${esc(s.promptpayName||'')}"></div><div class="field"><label>ลิงก์รูป QR พร้อมเพย์</label><input id="promptpayQrUrl" class="input" value="${esc(s.promptpayQrOriginalUrl||s.promptpayQrUrl||'')}" oninput="qrPreview.src=driveImageUrl(this.value);qrPreview.style.display=this.value?'block':'none'"><img id="qrPreview" src="${esc(s.promptpayQrUrl||'')}" style="${s.promptpayQrUrl?'':'display:none;'}width:150px;height:150px;object-fit:contain;margin-top:10px;border:1px solid var(--line);border-radius:12px;padding:6px"></div></div>
+ <div class="field"><label><input id="storeLogoEnabled" type="checkbox" ${String(s.storeLogoEnabled)==='true'?'checked':''}> แสดงโลโก้ร้านในระบบ</label></div>
+ <div class="field"><label><input id="cashEnabled" type="checkbox" ${String(s.cashEnabled)!=='false'?'checked':''}> เปิดรับเงินสด</label></div>
+ <div class="field"><label><input id="promptpayEnabled" type="checkbox" ${String(s.promptpayEnabled)!=='false'?'checked':''}> เปิดรับพร้อมเพย์</label></div>
+ <button class="btn btn-primary" onclick="saveSettings()">บันทึกการตั้งค่า</button></div>
+ <div class="card"><div class="row between"><div><h3>ช่วงเวลาจอง 24 ชั่วโมง</h3><div class="muted">เพิ่ม แก้ไข เปิด-ปิด หรือลบเวลาได้</div></div><div class="row"><button class="btn btn-light" onclick="resetTimeSlots()">สร้างเวลา 24 ชั่วโมงใหม่</button><button class="btn btn-primary" onclick="timeSlotModal()">+ เพิ่มเวลา</button></div></div>
+ <div style="overflow:auto;max-height:620px"><table><thead><tr><th>ลำดับ</th><th>เวลา</th><th>สถานะ</th><th>จัดการ</th></tr></thead><tbody>${slots.map(x=>`<tr><td>${x.sortOrder}</td><td><b>${x.startTime} - ${x.endTime}</b><br><span class="muted">${esc(x.note||'')}</span></td><td>${x.active?badge('confirmed'):badge('disabled')}</td><td><button class="btn btn-light" onclick='timeSlotModal(${JSON.stringify(x)})'>แก้ไข</button> <button class="btn btn-danger" onclick="deleteTimeSlot('${x.id}')">ลบ</button></td></tr>`).join('')}</tbody></table></div></div></div>`;
+}
+async function resetTimeSlots(){if(!confirm('สร้างช่วงเวลา 00:00-23:50 ใหม่ทั้งหมดหรือไม่?'))return;try{load();await gas('adminResetTimeSlots',token);toast('สร้างช่วงเวลาใหม่แล้ว');renderAdminSettings()}catch(e){toast(e.message)}finally{load(false)}}
+async function saveSettings(){try{load();const r=await gas('adminSaveSettings',token,{systemName:systemName.value.trim(),storeLogoUrl:storeLogoUrl.value.trim(),storeLogoEnabled:String(storeLogoEnabled.checked),defaultPrice:defaultPrice.value,defaultDuration:defaultDuration.value,promptpayId:promptpayId.value.trim(),promptpayName:promptpayName.value.trim(),promptpayQrUrl:promptpayQrUrl.value.trim(),openTime:'00:00',closeTime:'23:59',cashEnabled:String(cashEnabled.checked),promptpayEnabled:String(promptpayEnabled.checked)});appConfig=null;await getAppConfig();applyBrand();toast('บันทึกการตั้งค่าแล้ว');await renderAdminSettings()}catch(e){toast(e.message)}finally{load(false)}}
+function timeSlotModal(s={}){document.body.insertAdjacentHTML('beforeend',`<div id="modal" class="modal"><div class="modal-box"><div class="row between"><h3>${s.id?'แก้ไขช่วงเวลา':'เพิ่มช่วงเวลา'}</h3><button class="btn btn-light" onclick="modal.remove()">✕</button></div><input id="sid" type="hidden" value="${esc(s.id||'')}"><div class="grid grid-2"><div class="field"><label>เวลาเริ่ม</label><input id="slotStart" class="input" type="time" value="${esc(s.startTime||'00:00')}"></div><div class="field"><label>เวลาสิ้นสุด</label><input id="slotEnd" class="input" type="time" value="${esc(s.endTime||'00:50')}"></div><div class="field"><label>ลำดับการแสดง</label><input id="slotOrder" class="input" type="number" value="${s.sortOrder||1}"></div><div class="field"><label>สถานะ</label><select id="slotActive" class="input"><option value="true" ${s.active!==false?'selected':''}>เปิดใช้งาน</option><option value="false" ${s.active===false?'selected':''}>ปิดใช้งาน</option></select></div></div><div class="field"><label>หมายเหตุ</label><input id="slotNote" class="input" value="${esc(s.note||'')}"></div><button class="btn btn-primary btn-block" onclick="saveTimeSlot()">บันทึกช่วงเวลา</button></div></div>`)}
+async function saveTimeSlot(){try{await gas('adminSaveTimeSlot',token,{id:sid.value,startTime:slotStart.value,endTime:slotEnd.value,sortOrder:slotOrder.value,active:slotActive.value==='true',note:slotNote.value});modal.remove();toast('บันทึกช่วงเวลาแล้ว');renderAdminSettings()}catch(e){toast(e.message)}}
+async function deleteTimeSlot(id){if(!confirm('ลบช่วงเวลานี้หรือไม่?'))return;try{await gas('adminDeleteTimeSlot',token,id);toast('ลบแล้ว');renderAdminSettings()}catch(e){toast(e.message)}}
+
 </script>
-
 </body>
 </html>
